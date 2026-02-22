@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html>
 <head>
     <title>Cluedo Tracker</title>
@@ -101,6 +101,222 @@ const data = {
 };
 
 // Load saved state or initialize empty
+let state = JSON.parse(sessionStorage.getItem("cluedoState")) || {};
+
+function saveState() {
+    sessionStorage.setItem("cluedoState", JSON.stringify(state));
+}
+
+function createSection(sectionName, items) {
+    const section = document.getElementById(sectionName);
+
+    items.forEach(item => {
+        const div = document.createElement("div");
+        div.className = "item";
+
+        const key = sectionName + "-" + item;
+
+        if (!state[key]) state[key] = "blank";
+
+        div.innerHTML = `
+            ${item}
+            <span class="status ${state[key]}">
+                ${getSymbol(state[key])}
+            </span>
+        `;
+
+        div.onclick = () => {
+            state[key] = nextState(state[key]);
+            saveState();
+            render();
+        };
+
+        section.appendChild(div);
+    });
+}
+
+function getSymbol(status) {
+    if (status === "yes") return "✔";
+    if (status === "no") return "✖";
+    return "-";
+}
+
+function nextState(current) {
+    if (current === "blank") return "yes";
+    if (current === "yes") return "no";
+    return "blank";
+}
+
+function render() {
+    document.getElementById("suspects").innerHTML = "<h2>Suspects</h2>";
+    document.getElementById("weapons").innerHTML = "<h2>Weapons</h2>";
+    document.getElementById("rooms").innerHTML = "<h2>Rooms</h2>";
+
+    createSection("suspects", data.suspects);
+    createSection("weapons", data.weapons);
+    createSection("rooms", data.rooms);
+}
+
+function clearSession() {
+    sessionStorage.removeItem("cluedoState");
+    state = {};
+    render();
+}
+
+render();
+</script>
+
+</body>
+</html> -->
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cluedo Tracker</title>
+
+    <!-- 🔥 Required for mobile responsiveness -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 15px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 22px;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            margin-top: 25px;
+            font-size: 18px;
+        }
+
+        .section {
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.08);
+        }
+
+        .item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 8px;
+            font-size: 16px;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+        }
+
+        .item:last-child {
+            border-bottom: none;
+        }
+
+        .status {
+            font-weight: bold;
+            font-size: 20px;
+            min-width: 30px;
+            text-align: center;
+        }
+
+        .blank { color: gray; }
+        .yes { color: green; }
+        .no { color: red; }
+
+        /* Bigger tap feel */
+        .item:active {
+            background-color: #f0f0f0;
+        }
+
+        /* Sticky bottom button for mobile */
+        .reset-container {
+            position: sticky;
+            bottom: 10px;
+            text-align: center;
+        }
+
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 10px;
+            background-color: #333;
+            color: white;
+            font-size: 16px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        button:active {
+            background-color: #555;
+        }
+
+        /* Slightly larger layout for tablets */
+        @media (min-width: 768px) {
+            body {
+                max-width: 600px;
+                margin: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<h1>Cluedo Detective Notebook 🕵️</h1>
+
+<div class="section" id="suspects">
+    <h2>Suspects</h2>
+</div>
+
+<div class="section" id="weapons">
+    <h2>Weapons</h2>
+</div>
+
+<div class="section" id="rooms">
+    <h2>Rooms</h2>
+</div>
+
+<div class="reset-container">
+    <button onclick="clearSession()">Reset Session</button>
+</div>
+
+<script>
+const data = {
+    suspects: [
+        "Colonel Mustard",
+        "Professor Plum",
+        "Reverend Green",
+        "Mrs Peacock",
+        "Miss Scarlett",
+        "Mrs White"
+    ],
+    weapons: [
+        "Dagger",
+        "Candlestick",
+        "Revolver",
+        "Rope",
+        "Lead Piping",
+        "Spanner"
+    ],
+    rooms: [
+        "Hall",
+        "Lounge",
+        "Dining Room",
+        "Kitchen",
+        "Ballroom",
+        "Conservatory",
+        "Billiard Room",
+        "Library",
+        "Study"
+    ]
+};
+
 let state = JSON.parse(sessionStorage.getItem("cluedoState")) || {};
 
 function saveState() {
